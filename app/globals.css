@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+:root {
+  /* Dark Terminal Theme Colors (OKLCH) */
+  --background: oklch(0.12 0.006 240);
+  --foreground: oklch(0.94 0.004 240);
+  
+  --surface: oklch(0.15 0.008 240);
+  --surface-elevated: oklch(0.18 0.010 240);
+  --border-custom: oklch(0.22 0.008 240);
+  
+  --accent-custom: oklch(0.75 0.18 145); /* Electric Green */
+  --bullish: oklch(0.70 0.19 140);        /* Emerald Green */
+  --bearish: oklch(0.62 0.21 28);         /* Red-Orange */
+  --muted-custom: oklch(0.60 0.004 240);  /* Muted Grey */
+  
+  --font-sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-border-custom: var(--border-custom);
+  --color-accent-custom: var(--accent-custom);
+  --color-bullish: var(--bullish);
+  --color-bearish: var(--bearish);
+  --color-muted-custom: var(--muted-custom);
+  
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
+/* Custom base styles */
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Scrollbar for Terminal aesthetic */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-custom);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-custom);
+}
+
+/* Trading table cell update flash animation */
+@keyframes flash-green {
+  0% { background-color: rgba(16, 185, 129, 0.15); }
+  100% { background-color: transparent; }
+}
+
+@keyframes flash-red {
+  0% { background-color: rgba(239, 68, 68, 0.15); }
+  100% { background-color: transparent; }
+}
+
+.flash-up {
+  animation: flash-green 0.8s ease-out;
+}
+
+.flash-down {
+  animation: flash-red 0.8s ease-out;
+}
