@@ -1,19 +1,7 @@
-import { auth } from "@/lib/auth";
+import NextAuth from "next-auth";
+import { authConfig } from "./auth.config";
 
-export default auth((req) => {
-  const isLoggedIn = !!req.auth;
-  const { pathname } = req.nextUrl;
-
-  // Allow public routes
-  if (pathname === "/login" || pathname.startsWith("/api/auth")) {
-    return;
-  }
-
-  // Redirect to login if not logged in
-  if (!isLoggedIn) {
-    return Response.redirect(new URL("/login", req.nextUrl));
-  }
-});
+export default NextAuth(authConfig).auth;
 
 export const config = {
   matcher: [

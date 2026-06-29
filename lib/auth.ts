@@ -1,8 +1,8 @@
 import NextAuth from "next-auth";
-import Twitter from "next-auth/providers/twitter";
 import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "@/lib/db";
+import { authConfig } from "@/auth.config";
 
 const isMockAuth = 
   !process.env.TWITTER_CLIENT_ID || 
@@ -11,8 +11,8 @@ const isMockAuth =
   process.env.TWITTER_CLIENT_SECRET === "mock_twitter_client_secret";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   adapter: PrismaAdapter(db),
-  // NextAuth v5 requires session strategy to be "jwt" if using Credentials provider
   session: { strategy: isMockAuth ? "jwt" : "database" },
   providers: [
     ...(isMockAuth 
@@ -49,18 +49,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             },
           })
         ]
-      : [
-          Twitter({
-            clientId: process.env.TWITTER_CLIENT_ID,
-            clientSecret: process.env.TWITTER_CLIENT_SECRET,
-          })
-        ]
+      : authConfig.providers
     )
   ],
   callbacks: {
+    ...authConfig.callbacks,
     async session({ session, token, user }) {
       if (session.user) {
-        // If JWT strategy is used (Mock mode), get ID from token. Otherwise from database user.
         session.user.id = token?.sub || user?.id;
       }
       return session;
@@ -71,8 +66,5 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
       return token;
     }
-  },
-  pages: {
-    signIn: "/login",
   },
 });
