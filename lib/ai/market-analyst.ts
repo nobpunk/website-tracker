@@ -102,7 +102,13 @@ export async function generateAIAnalysis(
     return generateMockAnalysis(symbol, latestCandle.close, priceChange24h, indicators, prompt);
   }
 
-  const openai = new OpenAI({ apiKey });
+  const baseURL = process.env.OPENAI_BASE_URL || undefined;
+  const modelName = process.env.OPENAI_MODEL || "gpt-4o-mini";
+
+  const openai = new OpenAI({ 
+    apiKey,
+    baseURL
+  });
 
   const systemMessage = `
     You are an expert AI financial analyst and trading co-pilot.
@@ -138,7 +144,7 @@ export async function generateAIAnalysis(
 
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: modelName,
       messages: [
         { role: "system", content: systemMessage },
         { role: "user", content: userMessage },
