@@ -2,7 +2,7 @@
  * Binance API client for fetching market data.
  */
 
-const BINANCE_BASE_URL = "https://api.binance.com/api/v3";
+const BINANCE_BASE_URL = "https://data-api.binance.vision/api/v3";
 
 export interface CandleData {
   time: number; // Unix timestamp in seconds

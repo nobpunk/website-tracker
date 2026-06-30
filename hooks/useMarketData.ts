@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useMarketStore, LivePrice } from "@/store/useMarketStore";
 import { SUPPORTED_SYMBOLS } from "@/lib/market/binance";
 
-const WS_URL = "wss://stream.binance.com:9443/ws/!ticker@arr";
+const WS_URL = "wss://data-stream.binance.vision/ws/!ticker@arr";
 
 export function useMarketData() {
   const { prices, setPrice, setPrices } = useMarketStore();
