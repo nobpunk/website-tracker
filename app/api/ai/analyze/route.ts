@@ -5,9 +5,7 @@ import { generateAIAnalysis } from "@/lib/ai/market-analyst";
 import { NextResponse } from "next/server";
 
 export const POST = auth(async function POST(req) {
-  if (!req.auth || !req.auth.user || !req.auth.user.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const userId = req.auth?.user?.id;
 
   try {
     const { symbol, interval = "1h", prompt } = await req.json();
@@ -25,30 +23,35 @@ export const POST = auth(async function POST(req) {
     // 2. Generate AI Analysis
     const result = await generateAIAnalysis(symbol, candles, prompt);
 
-    // 3. Verify user exists in the database to prevent foreign key errors (e.g. after database migrations)
-    const userExists = await db.user.findUnique({
-      where: { id: req.auth.user.id },
-    });
+    // 3. Save to database for history (only if user is logged in)
+    if (userId) {
+      const userExists = await db.user.findUnique({
+        where: { id: userId },
+      });
 
-    if (!userExists) {
-      return NextResponse.json(
-        { error: "Session expired due to database update. Please log out and log in again." },
-        { status: 401 }
-      );
+      if (userExists) {
+        const savedAnalysis = await db.analysis.create({
+          data: {
+            userId,
+            symbol,
+            prompt: prompt || "Default Technical Analysis",
+            response: result.analysis,
+            signal: result.signal,
+          },
+        });
+        return NextResponse.json(savedAnalysis);
+      }
     }
 
-    // 4. Save to database for history
-    const savedAnalysis = await db.analysis.create({
-      data: {
-        userId: req.auth.user.id,
-        symbol,
-        prompt: prompt || "Default Technical Analysis",
-        response: result.analysis,
-        signal: result.signal,
-      },
+    // Return the analysis directly for guests
+    return NextResponse.json({
+      id: `guest_${Date.now()}`,
+      symbol,
+      prompt: prompt || "Default Technical Analysis",
+      response: result.analysis,
+      signal: result.signal,
+      createdAt: new Date().toISOString(),
     });
-
-    return NextResponse.json(savedAnalysis);
   } catch (error) {
     console.error("AI Analysis error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

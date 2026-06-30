@@ -13,16 +13,8 @@ export const authConfig = {
   },
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn = !!auth?.user;
-      const { pathname } = nextUrl;
-
-      // Allow public routes
-      if (pathname === "/login" || pathname.startsWith("/api/auth")) {
-        return true;
-      }
-
-      // Redirect to login if not logged in
-      return isLoggedIn;
+      // Allow all routes to be public (guests can view the dashboard and watchlist)
+      return true;
     },
   },
 } satisfies NextAuthConfig;

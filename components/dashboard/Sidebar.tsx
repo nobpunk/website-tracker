@@ -55,7 +55,7 @@ export function Sidebar() {
       </nav>
 
       {/* User Section */}
-      {session?.user && (
+      {session?.user ? (
         <div className="p-4 border-t border-border-custom flex flex-col gap-3 shrink-0">
           <div className="flex items-center gap-3">
             {session.user.image ? (
@@ -80,12 +80,22 @@ export function Sidebar() {
             </div>
           </div>
           <button
-            onClick={() => signOut({ callbackUrl: "/login" })}
+            onClick={() => signOut({ callbackUrl: "/" })}
             className="flex items-center justify-center gap-2 w-full py-2 border border-border-custom hover:bg-red-500/10 hover:text-bearish text-muted-custom text-xs font-medium rounded-sm transition-all active:scale-[0.98]"
           >
             <SignOut size={14} />
             Sign Out
           </button>
+        </div>
+      ) : (
+        <div className="p-4 border-t border-border-custom shrink-0">
+          <Link
+            href="/login"
+            className="flex items-center justify-center gap-2 w-full py-2 bg-accent-custom hover:bg-accent-custom/90 text-background text-xs font-bold rounded-sm transition-all active:scale-[0.98]"
+          >
+            <UserIcon size={14} weight="bold" />
+            Sign In
+          </Link>
         </div>
       )}
     </aside>
