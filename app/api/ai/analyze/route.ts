@@ -25,7 +25,19 @@ export const POST = auth(async function POST(req) {
     // 2. Generate AI Analysis
     const result = await generateAIAnalysis(symbol, candles, prompt);
 
-    // 3. Save to database for history
+    // 3. Verify user exists in the database to prevent foreign key errors (e.g. after database migrations)
+    const userExists = await db.user.findUnique({
+      where: { id: req.auth.user.id },
+    });
+
+    if (!userExists) {
+      return NextResponse.json(
+        { error: "Session expired due to database update. Please log out and log in again." },
+        { status: 401 }
+      );
+    }
+
+    // 4. Save to database for history
     const savedAnalysis = await db.analysis.create({
       data: {
         userId: req.auth.user.id,
